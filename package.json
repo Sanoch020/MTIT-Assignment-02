@@ -1,0 +1,22 @@
+{
+  "name": "school-management-microservices",
+  "version": "1.0.0",
+  "description": "IT4020 Assignment 2 — School Management System Microservices",
+  "scripts": {
+    "install:all": "npm install && cd student-service && npm install && cd ../course-service && npm install && cd ../teacher-service && npm install && cd ../enrollment-service && npm install && cd ../api-gateway && npm install && cd ..",
+    "setup": "node setup.js",
+    "start": "concurrently --kill-others-on-fail --prefix-colors \"cyan,green,magenta,yellow,blue\" \"npm run start:student\" \"npm run start:course\" \"npm run start:teacher\" \"npm run start:enrollment\" \"npm run start:gateway\"",
+    "start:student": "cd student-service    && node index.js",
+    "start:course": "cd course-service     && node index.js",
+    "start:teacher": "cd teacher-service    && node index.js",
+    "start:enrollment": "cd enrollment-service && node index.js",
+    "start:gateway": "cd api-gateway        && node index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "mongoose": "^8.23.0"
+  }
+}
