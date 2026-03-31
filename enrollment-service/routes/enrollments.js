@@ -13,6 +13,7 @@ const Enrollment = require("../models/enrollmentModel");
  *       required:
  *         - studentId
  *         - courseId
+ *         - courseName
  *         - enrollmentDate
  *         - status
  *       properties:
@@ -28,6 +29,10 @@ const Enrollment = require("../models/enrollmentModel");
  *           type: integer
  *           description: ID of the course being enrolled in
  *           example: 1
+ *         courseName:
+ *           type: string
+ *           description: Name of the course
+ *           example: Mathematics
  *         enrollmentDate:
  *           type: string
  *           format: date
@@ -104,9 +109,9 @@ router.get("/:id", async (req, res) => {
  *         description: Missing required fields
  */
 router.post("/", async (req, res) => {
-  const { studentId, courseId, enrollmentDate, status } = req.body;
-  if (!studentId || !courseId || !enrollmentDate || !status)
-    return res.status(400).json({ success: false, message: "All fields required: studentId, courseId, enrollmentDate, status" });
+  const { studentId, courseId, courseName, enrollmentDate, status } = req.body;
+  if (!studentId || !courseId || !courseName || !enrollmentDate || !status)
+    return res.status(400).json({ success: false, message: "All fields required: studentId, courseId, courseName, enrollmentDate, status" });
 
   const validStatuses = ["Active", "Completed", "Dropped"];
   if (!validStatuses.includes(status))
@@ -116,7 +121,7 @@ router.post("/", async (req, res) => {
   if (existing)
     return res.status(400).json({ success: false, message: "Student is already enrolled in this course" });
 
-  const enrollment = await Enrollment.create({ studentId, courseId, enrollmentDate, status });
+  const enrollment = await Enrollment.create({ studentId, courseId, courseName, enrollmentDate, status });
   res.status(201).json({ success: true, message: "Enrollment created", data: enrollment });
 });
 
