@@ -71,6 +71,78 @@ app.get("/health", (req, res) => {
   });
 });
 
+// ─── Gateway Docs Index ─────────────────────────────────────────────────────
+// Keeps /api-docs intuitive at gateway level and links to service docs.
+app.get(["/api-docs", "/api-docs/"], (req, res) => {
+  const docsBase = `http://localhost:${PORT}`;
+  res.type("html").send(`
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>School Management System API Docs</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f7f9fc;
+            color: #1f2937;
+          }
+          .card {
+            max-width: 760px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          }
+          h1 { margin-top: 0; }
+          ul { padding-left: 20px; }
+          li { margin: 12px 0; }
+          a { color: #2563eb; text-decoration: none; }
+          a:hover { text-decoration: underline; }
+          .link {
+            display: inline-block;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: #f9fafb;
+          }
+          .note { margin-top: 20px; color: #6b7280; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h1>API Documentation</h1>
+          <p>Select a service below to open its Swagger UI:</p>
+          <ul>
+            <li><a class="link" href="${docsBase}/students">Student Service</a></li>
+            <li><a class="link" href="${docsBase}/courses">Course Service</a></li>
+            <li><a class="link" href="${docsBase}/teachers">Teacher Service</a></li>
+            <li><a class="link" href="${docsBase}/enrollments">Enrollment Service</a></li>
+          </ul>
+          <p class="note">Gateway URL: <strong>http://localhost:${PORT}</strong></p>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
+app.get("/api-docs/:service", (req, res) => {
+  const service = (req.params.service || "").toLowerCase();
+  if (!SERVICE_REGISTRY[service]) {
+    return res.status(404).json({
+      success: false,
+      message: `Unknown service '${service}'`,
+      available_services: Object.keys(SERVICE_REGISTRY),
+    });
+  }
+
+  return res.redirect(`/docs/${service}`);
+});
+
 // ─── Proxy: Swagger Docs (via gateway) ───────────────────────────────────────
 // Access any service's swagger through: http://localhost:8080/docs/<service>
 app.use(
